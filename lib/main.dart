@@ -1,63 +1,19 @@
+import 'dart:async';
+
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:todo_getx/controllers/counter_controller.dart';
-import 'package:todo_getx/modules/app_module.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:todo_getx/app.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(TodoApplication());
-}
+  await Firebase.initializeApp();
+  Get.put(await SharedPreferences.getInstance());
 
-class TodoApplication extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return GetBuilder<AppModule>(
-        init: AppModule(),
-        builder: (controller) {
-          final CounterController counterController =
-              Get.find<CounterController>();
-          return GetMaterialApp(
-            title: 'Flutter Demo',
-            initialBinding: controller,
-            home: Scaffold(
-              appBar: AppBar(
-                title: Text("Flutter Todo App Getx"),
-              ),
-              body: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      'You have pushed the button this many times:',
-                    ),
-                    // Text(
-                    //   '${counterController.count}',
-                    //   style: Theme.of(context).textTheme.headline4,
-                    // )
-                    GetX(
-                        init: counterController,
-                        builder: (counterController) {
-                          return Text(
-                            '${counterController.count}',
-                            style: Theme.of(context).textTheme.headline4,
-                          );
-                        })
-                    // Obx(() => Text(
-                    //       '${counterController.count}',
-                    //       style: Theme.of(context).textTheme.headline4,
-                    //     ))
-                  ],
-                ),
-              ),
-              floatingActionButton: FloatingActionButton(
-                onPressed: () {
-                  counterController.increment();
-                },
-                tooltip: 'Increment',
-                child: Icon(Icons.add),
-              ),
-            ),
-          );
-        });
-  }
+  runZonedGuarded(() {
+    runApp(TodoApplication());
+  }, (error, stackTrade) {
+    print(error);
+  });
 }
